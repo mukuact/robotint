@@ -8,22 +8,24 @@ import sys
 repeatNum = 2000
 m_num = 10
 out_num = 6
+ALPHA = 1.0
+ETA = 0.5
 
 
-## get noise probability
-argvs = sys.argv
-argc = len(argvs)
-if (argc == 1):
-    noiseProb = 0
-elif (argc == 2):
-    noiseProb = float(argvs[1])
-else:
-    print "Please input noise probability!"
-    quit()
+### get noise probability
+#argvs = sys.argv
+#argc = len(argvs)
+#if (argc == 1):
+#    noiseProb = 0
+#elif (argc == 2):
+#    noiseProb = float(argvs[1])
+#else:
+#    print "Please input noise probability!"
+#    quit()
 
     
 ## define noise generator function
-def NoiseGenerator(data):
+def NoiseGenerator(data,noiseProb):
     noise = 255 * np.random.rand()
     prob = np.random.rand()
     if prob > 1-noiseProb:
@@ -54,12 +56,12 @@ for i in range(100):
     nInput.append( neuron.InputNeuron(_input[i]) )
     
 for j in range(m_num):
-    nMiddle.append(neuron.Neuron(1.0))
+    nMiddle.append(neuron.Neuron(ALPHA,ETA))
     for k in range(100):
         nMiddle[j].connect(nInput[k],w[j][k])
 
 for j in range(out_num):
-    nOutput.append(neuron.Neuron(1.0))
+    nOutput.append(neuron.Neuron(ALPHA,ETA))
     for k in range(m_num):
         nOutput[j].connect(nMiddle[k],wo[j][k])
     print nOutput[j].output() ####Printing initial output
@@ -111,28 +113,31 @@ for k in range(repeatNum):
 print 'finish learning'
 
 
-##test---OK
+##test
 print 'test now'
-temp = 0
-for j,image in enumerate(images):
-    result = []
+noiseProbs = range(0,26,2)
+effs = []
+for prob in noiseProbs:
+    temp = 0
+    for j,image in enumerate(images):
+        #    result = []
+        
+        for i ,data in enumerate(image):
+            data = NoiseGenerator(data,prob) ###plus noise on data
+            nInput[i].refreshdata(data)
+            
+        for i in range(out_num):
+            #        result.append(nOutput[i].output())
+            temp += (nOutput[i].output() - answer[j][i])**2
+#    print result
+    effs.append( np.sqrt(temp) )
+    print 'efficient (noise %d%%) = ' % prob,np.sqrt(temp)
 
-    for i ,data in enumerate(image):
-        data = NoiseGenerator(data) ###plus noise on data
-        nInput[i].refreshdata(data)
-
-    for i in range(out_num):
-        result.append(nOutput[i].output())
-        temp += (nOutput[i].output() - answer[j][i])**2
-    print result
-
-eff = np.sqrt(temp)
-
-
+##printing coeffient
 print '*** printing coefficient***'
 print 'middle layer neuron number =',m_num
-print "repeat num =", repeatNum*out_num
-print "efficient =", eff
-print "noise probability =",noiseProb
+print "repeat num =", count
+#print "efficient =", eff
+#print "noise probability =",noiseProb
 print "eva =", eva
 print "ALPHA = ",1,", ETA =",neuron.Neuron.ETA

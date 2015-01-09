@@ -1,16 +1,17 @@
 import numpy as np
 
 class Neuron:
-    ETA = 0.5
+
    
 
-    def __init__(self,ALPHA):
+    def __init__(self,ALPHA,ETA):
         self.prev = []
         self.prevcount = 0
         self.next =[]
         self.nextcount = 0
         self.delta = 0
         self.ALPHA = ALPHA
+        self.ETA = ETA
       
 
     def output(self):
