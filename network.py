@@ -102,7 +102,6 @@ for k in range(repeatNum):
             count += 1
         eva = np.sqrt(temp) / count
         print eva
-
         if (eva < 0.001):
             break
     if (eva < 0.001):
