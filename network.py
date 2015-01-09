@@ -114,29 +114,29 @@ print 'finish learning'
 
 ##test
 print 'test now'
-noiseProbs = range(0,26,2)
+noiseProbs = np.append(np.append(np.arange(0,1,0.1),range(1,10)),range(10,26,5))
 effs = []
 for prob in noiseProbs:
     temp = 0
     for j,image in enumerate(images):
-        #    result = []
+        result = []
         
         for i ,data in enumerate(image):
             data = NoiseGenerator(data,prob) ###plus noise on data
             nInput[i].refreshdata(data)
             
         for i in range(out_num):
-            #        result.append(nOutput[i].output())
+            result.append(nOutput[i].output())
             temp += (nOutput[i].output() - answer[j][i])**2
-#    print result
+        print result
     effs.append( np.sqrt(temp) )
-    print 'efficient (noise %d%%) = ' % prob,np.sqrt(temp)
+    print 'efficient (noise %f%%) = ' % prob,np.sqrt(temp)
 
 ##printing coeffient
 print '*** printing coefficient***'
 print 'middle layer neuron number =',m_num
-print "repeat num =", count
+print "repeat num =", count/out_num ,"ALPHA = ",1,", ETA =",ETA
 #print "efficient =", eff
 #print "noise probability =",noiseProb
 print "eva =", eva
-print "ALPHA = ",1,", ETA =",neuron.Neuron.ETA
+
